@@ -2,13 +2,28 @@ import pandas as pd
 import folium
 from folium.plugins import HeatMap
 
-data = pd.read_csv("./data/수정된 데이터.csv", encoding="cp949")
-data.columns = ["loc_num", "loc_name", "date", "insolation", "latitude", "longitude"]
+# datas = pd.read_csv("./data/한국에너지기술연구원_신재생자원지도데이터_태양자원_천리안2호_수평면전일사량_20200831.csv", encoding="cp949")
 
-df = data.groupby("loc_name").agg({"insolation" : "mean","latitude" : "mean", "longitude" : "mean"})
+# datas.columns = ["위도","경도","2019-09","2019-10","2019-11","2019-12","2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08"]
+# for col in datas.columns[2:13]:
+#     datas = datas.drop(columns=col)
+# datas.to_csv("./data/2020-08.csv",encoding="EUC-KR",index=False)
 
-map = folium.Map(location=[-23.0813, -67.8098], zoom_start=5)
-sun_data = [[row['latitude'], row['longitude'], row['insolation']] for index, row in df.iterrows()]
+# 데이터 불러오기
+file_path = './data/2020-08.csv'
+data = pd.read_csv(file_path, encoding='euc-kr')
 
-HeatMap(sun_data).add_to(map)
-map.save('heatmap.html')
+# # 필터링 기준 설정
+# min_irradiance = 500  # 최소 일사량 (사용자 지정 가능)
+
+# # 필터링
+# filtered_data = data[data['합계 일사량(MJ/m2)'] >= min_irradiance]
+data.columns = ["위도","경도","2020-08"]
+# 지도 생성
+map_center = [data['위도'].mean(),data['경도'].mean()]
+solar_map = folium.Map(location=map_center, zoom_start=7)
+
+# 히트맵 데이터 생성
+heat_data = data[['위도', '경도', '2020-08']].values.tolist()
+HeatMap(heat_data, radius=15).add_to(solar_map)
+solar_map.save('solar_recommendations_with_click_popup.html')

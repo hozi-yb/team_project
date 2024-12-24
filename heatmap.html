@@ -25,7 +25,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_3bb13e7c90c65b6a1524e59c1be5e9c0 {
+                #map_209e20bed4bb432a4f97e26046836c09 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -40,20 +40,23 @@
 <body>
     
     
-            <div class="folium-map" id="map_3bb13e7c90c65b6a1524e59c1be5e9c0" ></div>
+            <div class="folium-map" id="map_209e20bed4bb432a4f97e26046836c09" ></div>
         
 </body>
 <script>
     
     
-            var map_3bb13e7c90c65b6a1524e59c1be5e9c0 = L.map(
-                "map_3bb13e7c90c65b6a1524e59c1be5e9c0",
+            var map_209e20bed4bb432a4f97e26046836c09 = L.map(
+                "map_209e20bed4bb432a4f97e26046836c09",
                 {
                     center: [36.58153333333333, 127.91943333333334],
                     crs: L.CRS.EPSG3857,
-                    zoom: 7,
-                    zoomControl: true,
-                    preferCanvas: false,
+                    ...{
+  "zoom": 7,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
                 }
             );
 
@@ -61,82 +64,107 @@
 
         
     
-            var tile_layer_52cc75d68bf4366611057033ddf8a6e0 = L.tileLayer(
+            var tile_layer_b1e8f87f8021adaf1bde89405bfc2c35 = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detectRetina": false, "maxNativeZoom": 19, "maxZoom": 19, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
             );
         
     
-            tile_layer_52cc75d68bf4366611057033ddf8a6e0.addTo(map_3bb13e7c90c65b6a1524e59c1be5e9c0);
+            tile_layer_b1e8f87f8021adaf1bde89405bfc2c35.addTo(map_209e20bed4bb432a4f97e26046836c09);
         
     
-            var heat_map_ce6d4b9a9148b1daa3d659dc5b18e5a1 = L.heatLayer(
+            var heat_map_aacfec8e7c1c94fd868ce80b53f98f47 = L.heatLayer(
                 [[36.9985, 127.7047, 315.9], [37.5665, 126.978, 290.2], [35.1796, 129.0756, 320.5]],
-                {"blur": 15, "maxZoom": 18, "minOpacity": 0.5, "radius": 15}
+                {
+  "minOpacity": 0.5,
+  "maxZoom": 18,
+  "radius": 15,
+  "blur": 15,
+}
             );
         
     
-            heat_map_ce6d4b9a9148b1daa3d659dc5b18e5a1.addTo(map_3bb13e7c90c65b6a1524e59c1be5e9c0);
+            heat_map_aacfec8e7c1c94fd868ce80b53f98f47.addTo(map_209e20bed4bb432a4f97e26046836c09);
         
     
-            var marker_e66eb6e356e0bf553d5789623d800c2a = L.marker(
+            var marker_1973fbed8093b8457a3849a29ea37706 = L.marker(
                 [36.9985, 127.7047],
-                {}
-            ).addTo(map_3bb13e7c90c65b6a1524e59c1be5e9c0);
+                {
+}
+            ).addTo(map_209e20bed4bb432a4f97e26046836c09);
         
     
-        var popup_250467915b7a714986ed970cdeb5b8de = L.popup({"maxWidth": 300});
+        var popup_d0b197d9826c3d7f19e76902ac3878b2 = L.popup({
+  "maxWidth": 300,
+});
 
         
             
-                var html_1460f1cc588e0fbcda75e751146a63da = $(`<div id="html_1460f1cc588e0fbcda75e751146a63da" style="width: 100.0%; height: 100.0%;">위도: 36.9985<br>경도: 127.7047<br>일사량: 315.9 W/m²</div>`)[0];
-                popup_250467915b7a714986ed970cdeb5b8de.setContent(html_1460f1cc588e0fbcda75e751146a63da);
+                var html_5dca5099cc24a858c4bf69b097417bd2 = $(`<div id="html_5dca5099cc24a858c4bf69b097417bd2" style="width: 100.0%; height: 100.0%;">위도: 36.9985<br>경도: 127.7047<br>일사량: 315.9 W/m²</div>`)[0];
+                popup_d0b197d9826c3d7f19e76902ac3878b2.setContent(html_5dca5099cc24a858c4bf69b097417bd2);
             
         
 
-        marker_e66eb6e356e0bf553d5789623d800c2a.bindPopup(popup_250467915b7a714986ed970cdeb5b8de)
+        marker_1973fbed8093b8457a3849a29ea37706.bindPopup(popup_d0b197d9826c3d7f19e76902ac3878b2)
         ;
 
         
     
     
-            var marker_454ae40b85156eedf6295bc4e1d0b496 = L.marker(
+            var marker_70f67881ac183473ba874243b422c736 = L.marker(
                 [37.5665, 126.978],
-                {}
-            ).addTo(map_3bb13e7c90c65b6a1524e59c1be5e9c0);
+                {
+}
+            ).addTo(map_209e20bed4bb432a4f97e26046836c09);
         
     
-        var popup_3f5ea51d66ed1a76b3af66b8627710f7 = L.popup({"maxWidth": 300});
+        var popup_9290195ba2f3af4f819b3d2708308f14 = L.popup({
+  "maxWidth": 300,
+});
 
         
             
-                var html_155fb0a6b112cc4a3cf0cdbf48ef2380 = $(`<div id="html_155fb0a6b112cc4a3cf0cdbf48ef2380" style="width: 100.0%; height: 100.0%;">위도: 37.5665<br>경도: 126.978<br>일사량: 290.2 W/m²</div>`)[0];
-                popup_3f5ea51d66ed1a76b3af66b8627710f7.setContent(html_155fb0a6b112cc4a3cf0cdbf48ef2380);
+                var html_40d75b4e8c9846503cc7ff4dc9cce738 = $(`<div id="html_40d75b4e8c9846503cc7ff4dc9cce738" style="width: 100.0%; height: 100.0%;">위도: 37.5665<br>경도: 126.978<br>일사량: 290.2 W/m²</div>`)[0];
+                popup_9290195ba2f3af4f819b3d2708308f14.setContent(html_40d75b4e8c9846503cc7ff4dc9cce738);
             
         
 
-        marker_454ae40b85156eedf6295bc4e1d0b496.bindPopup(popup_3f5ea51d66ed1a76b3af66b8627710f7)
+        marker_70f67881ac183473ba874243b422c736.bindPopup(popup_9290195ba2f3af4f819b3d2708308f14)
         ;
 
         
     
     
-            var marker_30be3c011b6cc9517dbcf4ace7306ddd = L.marker(
+            var marker_76a9d0bbc4422aa893026c2a4f374819 = L.marker(
                 [35.1796, 129.0756],
-                {}
-            ).addTo(map_3bb13e7c90c65b6a1524e59c1be5e9c0);
+                {
+}
+            ).addTo(map_209e20bed4bb432a4f97e26046836c09);
         
     
-        var popup_d10658b0804e9720e402d07ef9f6b1bb = L.popup({"maxWidth": 300});
+        var popup_ae87f4edd9e8c9a9971efcc7fba1505e = L.popup({
+  "maxWidth": 300,
+});
 
         
             
-                var html_f4b4e0b89da68a67d607b9965e0ea070 = $(`<div id="html_f4b4e0b89da68a67d607b9965e0ea070" style="width: 100.0%; height: 100.0%;">위도: 35.1796<br>경도: 129.0756<br>일사량: 320.5 W/m²</div>`)[0];
-                popup_d10658b0804e9720e402d07ef9f6b1bb.setContent(html_f4b4e0b89da68a67d607b9965e0ea070);
+                var html_58394f23719fc032b1886ee5d5e4de37 = $(`<div id="html_58394f23719fc032b1886ee5d5e4de37" style="width: 100.0%; height: 100.0%;">위도: 35.1796<br>경도: 129.0756<br>일사량: 320.5 W/m²</div>`)[0];
+                popup_ae87f4edd9e8c9a9971efcc7fba1505e.setContent(html_58394f23719fc032b1886ee5d5e4de37);
             
         
 
-        marker_30be3c011b6cc9517dbcf4ace7306ddd.bindPopup(popup_d10658b0804e9720e402d07ef9f6b1bb)
+        marker_76a9d0bbc4422aa893026c2a4f374819.bindPopup(popup_ae87f4edd9e8c9a9971efcc7fba1505e)
         ;
 
         
