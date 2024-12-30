@@ -1,7 +1,7 @@
 import pandas as pd
 import folium
 from folium.plugins import HeatMap, marker_cluster
-
+'''
 # datas = pd.read_csv("./data/한국에너지기술연구원_신재생자원지도데이터_태양자원_천리안2호_수평면전일사량_20200831.csv", encoding="cp949")
 
 # datas.columns = ["위도","경도","2019-09","2019-10","2019-11","2019-12","2020-01","2020-02","2020-03","2020-04","2020-05","2020-06","2020-07","2020-08"]
@@ -21,10 +21,12 @@ filtered_data = data[(data['2020-08'] >= 2.89) & (data['2020-08'] <= 4.4)]
 # idx_lon = data[(data["위도"]>=36.09235624359383) & (data["위도"]<=37.27578688222246)&(data["경도"]>=129.48570288602764)].index
 # print(idx_lon)
 
-for i in range(681529):
-    filtered_data = filtered_data[i][2] * 3.2 * 31
-    print(filtered_data)
+idx = filtered_data.index
 
+new_row = []
+for id in idx:
+    new_row.append(filtered_data.values[id][2] * 3.2 * 31)
+print(new_row)
 # for id in filtered_data.columns[2]:
 #     filtered_data= filtered_data.drop(index=id)
 
@@ -41,23 +43,27 @@ for i in range(681529):
 # HeatMap(heat_data, radius=12).add_to(solar_map)
 
 # solar_map.save('solar_recommendations_with_click_popup.html')
+'''
+'''
+datas = pd.read_csv("./data/2020-08_지역별 시간별 태양광 발전량.csv", encoding="cp949")
+datas.columns = ["거래시간","지역","태양광 발전량(MWh)"]
+datas['태양광 발전량(MWh)'] = pd.to_numeric(datas['태양광 발전량(MWh)'], errors='coerce')
+data_filled = datas.fillna(0)
+month_generation = data_filled.groupby('지역')['태양광 발전량(MWh)'].sum()
+# idx = average_generation.index
+# for id in idx:
+    
+# conversion_data
+month_generation.to_csv("./data/2020-08_지역별 발전량.csv",encoding="EUC-KR")
+'''
+'''
+datas = pd.read_csv("./data/2020-08-시도 별 합계 전력사용량.csv",encoding="cp949")
+datas.columns = ["시도", "전력 사용량(kWh)"]
+datas["전력 사용량(kWh)"] = datas["전력 사용량(kWh)"].str.replace(',','')
+datas["전력 사용량(kWh)"] = datas["전력 사용량(kWh)"].str.replace('"',"").astype("int64")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+datas.to_csv("./data/2020-08-시도 별 합계 전력사용량.csv",encoding="EUC-KR")
+'''
 
 
 
