@@ -38,9 +38,9 @@ df["insolation per month (kmh/m^2)"] = df["insolation per day (kmh/m^2)"] * 31
 #---------------------------------행정동geojson
 
 #관측 지점의 좌표가 Geojson 데이터의 어느 도시에 속하는지 확인하는 코드
-geojson_path = r".\Data\HangJeongDong_ver20241001.geojson"
+# geojson_path = r"./data/HangJeongDong_ver20241001.geojson"
 
-gdf = gpd.read_file(geojson_path)
+gdf = gpd.read_file(r"./data/HangJeongDong_ver20241001.geojson")
 
 #확인할 좌표 리스트
 df['coord'] = list(zip(df['latitude'], df["longitude"]))
