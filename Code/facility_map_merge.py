@@ -10,6 +10,7 @@ from shapely.geometry import Point
 from matplotlib.colors import Normalize, rgb2hex
 from matplotlib import colormaps 
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 import plotly.graph_objects as go
 import plotly.express as px
@@ -22,11 +23,12 @@ from plotly.subplots import make_subplots
 facility_df = pd.read_csv("./fa_data/2023_신규_발전소_설치.csv", encoding="euc-kr")
 e_power_df = pd.read_csv("./fa_data/2023_신규_발전량.csv", encoding="euc-kr")
 sido_area = pd.read_csv("./fa_data/시도별_면적.csv", encoding="euc-kr")
+power_usage = pd.read_csv("./fa_data/2020-08 시도별 산업용 전력사용량.csv",encoding="euc_kr")
 
 facility_df.columns = ["loc_nm", "facility_capacity","facility_count", "latitude", "longitude"]
 e_power_df.columns = ["loc_nm", "insolation_capacity", "electric", "latitude", "longitude"]
 sido_area.columns = ["loc_nm", "area", "electric_capacity", "latitude", "longitude"]
-
+power_usage.columns = ["date","loc_nm","category","unit_pu(kwh/count)","unit_pu(%)"]
 
 # 행정동 데이터프레임
 df = pd.read_csv(r".\Data\2020-08.csv", encoding="EUC-KR")
@@ -227,20 +229,26 @@ gm1 = folium.GeoJson(
 )
 
 for i in range(len(e_power_df)) :
+    # 신규 발전량 값
     name = e_power_df.columns[1:3]
     value = e_power_df.iloc[i, 1:3]
-    
-    fig = make_subplots(rows=1, cols=2,
-                    specs=[[{"type": "bar"}, {"type": "table"}]])
-    
+    # 산업용 전력 사용량 값
+    region_data = power_usage[power_usage["loc_nm"]==e_power_df.iloc[i,0]]
+
+
+
+    fig = make_subplots(rows=2, cols=2,
+                specs=[[{"type": "bar", "rowspan": 2}, {"type": "table"}],
+                        [None, {"type": "domain"}]],
+                           )
+    # 제목
     fig.update_layout(title_text= f"{e_power_df.iloc[i, 0]} 발전량 및 전력 사용량",
                        title_x = 0.5,
                        legend_y=0.5,
                        legend_x=-0.15)
-
+    # bar plot 추가
     fig.add_trace(go.Bar( y=value ,x=name),
                   row=1, col=1)
-
     fig.add_annotation(x=0, y=10,
             text=f"{(value.iloc[0] / value.iloc[1] * 100):.2f}%",
             showarrow=True,
@@ -251,12 +259,24 @@ for i in range(len(e_power_df)) :
             showarrow=True,
             arrowhead=1)
     
+    # 테이블 추가
     fig.add_trace(
         go.Table(
             header=dict(values=name),
             cells=dict(values=value)
             ),row=1, col=2
         )
+
+    if not region_data.empty:
+        fig.add_trace(
+            go.Pie(
+                labels=region_data["category"],
+                values = region_data["unit_pu(%)"],
+                name = "산업용 전력 비율(%)",
+            ),row=2, col=2 
+        )
+        fig.update_layout(showlegend = False)
+
 
     fig.update_yaxes(title_text='단위: KW')
 
