@@ -1,6 +1,6 @@
 import pandas as pd
 import geopandas as gpd
-import fiona
+
 
 import folium
 from folium import IFrame
@@ -273,9 +273,9 @@ for i in range(len(e_power_df)) :
                 labels=region_data["category"],
                 values = region_data["unit_pu(%)"],
                 name = "산업용 전력 비율(%)",
+                showlegend=False
             ),row=2, col=2 
         )
-        fig.update_layout(showlegend = False)
 
 
     fig.update_yaxes(title_text='단위: KW')
