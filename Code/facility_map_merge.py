@@ -18,8 +18,8 @@ from plotly.subplots import make_subplots
 
 #----------------------------------데이터프레임
 # 시/도 데이터프레임
-facility_df = pd.read_csv("./fa_data/2023_신규_발전소_설치.csv", encoding="euc-kr")
-e_power_df = pd.read_csv("./fa_data/2023_신규_발전량.csv", encoding="euc-kr")
+facility_df = pd.read_csv("./fa_data/2023_누적_발전소_설치.csv", encoding="euc-kr")
+e_power_df = pd.read_csv("./fa_data/2020년_8월_발전량.csv", encoding="euc-kr")
 sido_area = pd.read_csv("./fa_data/시도별_면적.csv", encoding="euc-kr")
 
 facility_df.columns = ["loc_nm", "facility_capacity","facility_count", "latitude", "longitude"]
@@ -35,12 +35,14 @@ df["insolation per month (kmh/m^2)"] = df["insolation per day (kmh/m^2)"] * 31
 
 
 
+
+
 #---------------------------------행정동geojson
 
 #관측 지점의 좌표가 Geojson 데이터의 어느 도시에 속하는지 확인하는 코드
-# geojson_path = r"./data/HangJeongDong_ver20241001.geojson"
+geojson_path = r".\Data\HangJeongDong_ver20241001.geojson"
 
-gdf = gpd.read_file(r"./data/HangJeongDong_ver20241001.geojson")
+gdf = gpd.read_file(geojson_path)
 
 #확인할 좌표 리스트
 df['coord'] = list(zip(df['latitude'], df["longitude"]))
@@ -123,7 +125,7 @@ for _, data in facility_df.iterrows():
 
 
 # 색상데이터를 위한 count 노멀라이즈
-facility_df["facility_count"] = facility_df["facility_count"].str.replace(",", "").astype(float)
+facility_df["facility_count"] = facility_df["facility_count"].astype(float)  #.str.replace(",", "")
 norm = Normalize(vmin=facility_df["facility_count"].min(), vmax=facility_df["facility_count"].max())
 facility_df['normalized_count'] = facility_df['facility_count'].apply(norm)
 
@@ -211,7 +213,7 @@ folium.GeoJson(
 folium.GeoJson(
     merge_geojson,
     tooltip=folium.GeoJsonTooltip(fields=["CTP_KOR_NM", "facility_capacity", "facility_count"],
-                                   aliases=["지역명:", "설비 용량 (KW) :", "설비 개수:"],),
+                                   aliases=["지역명:", "23년 누적 설비 용량 (KW) :", "23년 누적 설비 개수:"],),
     style_function=style_function,
     popup= folium.Popup("2023년 기준 시설 정보", max_width=300)
 ).add_to(fg2)
@@ -252,37 +254,20 @@ for i in range(len(e_power_df)) :
     
     fig.add_trace(
         go.Table(
-            header=dict(values=name),
+            header=dict(values=["태양광 발전량", "전력사용량"]),
             cells=dict(values=value)
             ),row=1, col=2
         )
 
-    fig.update_yaxes(title_text='단위: KW')
+    fig.update_yaxes(title_text='단위: MKW')
 
     html = fig.to_html(include_plotlyjs="cdn")
-    iframe = IFrame(html, width=700, height=600)
+    iframe = IFrame(html, width=700, height=400)
     popup = folium.Popup(iframe, max_width=700)
 
     e_power_bar_plot.append(popup)
 
 
-    # # 바플롯에 퍼센트 출력
-    # fig.add_annotation(x=0, y=10,
-    #         text=f"{(value.iloc[0] / value.iloc[1] * 100):.2f}%",
-    #         showarrow=True,
-    #         arrowhead=1)
-
-    # fig.add_annotation(x=1, y=10,
-    #         text=f"{100 - (value.iloc[0] / value.iloc[1] * 100):.2f}%",
-    #         showarrow=True,
-    #         arrowhead=1)
-
-    # # html로 플롯 내보내기
-    # html = fig.to_html(include_plotlyjs="cdn")
-    # iframe = IFrame(html, width=400, height=600)
-    # popup = folium.Popup(iframe, max_width=500)
-
-    # e_power_bar_plot.append(popup)
 
 
 # 플롯 마커에 추가 후 맵으로
@@ -301,7 +286,7 @@ merge_geojson = geojson.merge(sido_area, left_on="CTP_KOR_NM", right_on="CTP_KOR
 gm2 = folium.GeoJson(
     merge_geojson,
     tooltip=folium.GeoJsonTooltip(fields=["loc_nm", "area", "electric_capacity"],
-                                  aliases=["지역명:", "지역면적:", "설비 용량(KW):"])
+                                  aliases=["지역명:", "지역면적(KM^2):", "23년 누적 설비 용량(KW):"])
     # style_function=style_function
 )
 
@@ -309,7 +294,7 @@ gm2 = folium.GeoJson(
 for i in range(len(sido_area)):
     location = [sido_area.loc[i, 'latitude'], sido_area.loc[i, 'longitude']]
     electric_capacity_per_area = sido_area.loc[i, 'electric_capacity'] / sido_area.loc[i, 'area']
-    tooltip_text = f"지역명: {sido_area.loc[i, 'loc_nm']}<br>지역면적: {sido_area.loc[i, 'area']}<br>설비 용량(KW): {sido_area.loc[i, 'electric_capacity']}<br>설비 용량 / 면적: {electric_capacity_per_area:.2f}"
+    tooltip_text = f"지역명: {sido_area.loc[i, 'loc_nm']}<br>지역면적: {sido_area.loc[i, 'area']}<br>23년 누적 설비 용량(KW): {sido_area.loc[i, 'electric_capacity']}<br>설비 용량 / 면적 (23년 기준): {electric_capacity_per_area:.2f}"
     marker = folium.Marker(location=location, tooltip=tooltip_text)
     gm2.add_child(marker)
 
