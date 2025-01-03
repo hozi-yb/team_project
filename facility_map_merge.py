@@ -4,6 +4,7 @@ import geopandas as gpd
 import folium
 from folium import IFrame
 from folium.plugins import GroupedLayerControl
+from folium.plugins.treelayercontrol import TreeLayerControl
 
 from shapely.geometry import Point
 from matplotlib.colors import Normalize, rgb2hex
@@ -283,6 +284,11 @@ facility_df["facility_count"] = facility_df["facility_count"].astype(float)  #.s
 norm = Normalize(vmin=facility_df["facility_count"].min(), vmax=facility_df["facility_count"].max())
 facility_df['normalized_count'] = facility_df['facility_count'].apply(norm)
 
+# 색상데이터를 위한 발전량 노멀라이즈
+facility_df["facility_capacity"] = facility_df["facility_capacity"].astype(float)  #.str.replace(",", "")
+norm = Normalize(vmin=facility_df["facility_capacity"].min(), vmax=facility_df["facility_capacity"].max())
+facility_df['normalized_capacity'] = facility_df['facility_capacity'].apply(norm)
+
 # 발전소 데이터에 새로 컬럼 추가해서 해당하는 지역이름 넣기
 facility_df["CTP_KOR_NM"] = geo_point
 sido_area["CTP_KOR_NM"] = geo_point
@@ -297,23 +303,27 @@ m = folium.Map(location=[37.56, 126.98], zoom_start=7, tiles="cartoDB Positron")
 
 
 # 레이어 컨트롤
-fg1 = folium.FeatureGroup(name="2020년 8월 일사량", show=False)
+fg1 = folium.FeatureGroup(name="2020년 8월 일사량", show=True)
 m.add_child(fg1)
 fg2 = folium.FeatureGroup(name="행정동 태양광발전 설비현황 (2024년 기준) ", show=False)
 m.add_child(fg2)
-fg3 = folium.FeatureGroup(name="시/도 별 태양광발전 설비현황 (2023년 기준)", show=False)
-m.add_child(fg3)
+
 fg4 = folium.FeatureGroup(name="전력사용량 대비 태양광발전량 (2020년 기준)", show=False)
 m.add_child(fg4)
-fg5 = folium.FeatureGroup(name="기준시/도 별 면적대비 설비용량 (2023년 기준)", show=False)
+fg5 = folium.FeatureGroup(name="2020년 8월 일사량", show=False)
 m.add_child(fg5)
+
+fg3 = folium.FeatureGroup(name="태양광발전 설비현황 (컬러맵 : 개수)", show=False)
+m.add_child(fg3)
+fg6 = folium.FeatureGroup(name="태양광발전 설비현황 (컬러맵 : 설비용량)", show=False)
+m.add_child(fg6)
 
 
 folium.LayerControl(collapsed=False).add_to(m)
 
 # 레이어 그룹만들기
 GroupedLayerControl(
-    groups={'행정동별': [fg1,fg2],'시/도': [fg5, fg4, fg3]},
+    groups={'행정동별': [fg1,fg2],'시/도': [fg5, fg4], '시/도 별 태양광발전 설비현황(2023년 기준)' : [fg3, fg6]},
     exclusive_groups=False
 ).add_to(m)
 
@@ -324,11 +334,10 @@ GroupedLayerControl(
 def colormap(value):
     return rgb2hex((value, 1 - value, 0))
 
-# 스타일 1
-
+# count 스타일 
 def style_function(x):
     facility_count = x["properties"].get("normalized_count", 0)
-    print(facility_count)
+    # print(facility_count)
     return {
         "fillColor": colormap(facility_count),
         "color": "black",
@@ -336,23 +345,16 @@ def style_function(x):
         "fillOpacity": 0.4,
     }
 
-# 행정동 스타일
-def style_function_2(feature):
-    color = feature['properties'].get('Color(hex)', None)
-    if color: #색상이 있는 경우 
-        return {
-            "fillColor" : color,
-            "color" : "black", #경계선 색
-            "weight": 1, #경계선 두께
-            "fillOpacity": 0.7
-        }
-    else: #색상 데이터가 없는 경우 투명 처리
-        return {
-            "fillColor" : "transparent",
-            "color" : "black", #경계선 색
-            "weight": 1, #경계선 두께
-            "fillOpacity": 0
-        }
+# capacity 스타일
+def style_function_2(x):
+    facility_capacity = x["properties"].get("normalized_capacity", 0)
+    # print(facility_capacity)
+    return {
+        "fillColor": colormap(facility_capacity),
+        "color": "black",
+        "weight": 1,
+        "fillOpacity": 0.4,
+    }
     
 # solar_power_plant 스타일
 def style_function_3(feature):
@@ -379,7 +381,7 @@ def style_function_3(feature):
 # ---- 행정동 geojson 저장
 folium.GeoJson(
     merged,
-    style_function = style_function_2,
+    style_function = style_function_3,
     tooltip = folium.GeoJsonTooltip(fields=["simple_name", "insolation per month (kmh/m^2)"])
 ).add_to(fg1)
 
@@ -398,11 +400,18 @@ folium.GeoJson(
     style_function=style_function,
     popup= folium.Popup("2023년 기준 시설 정보", max_width=300)
 ).add_to(fg3)
+folium.GeoJson(
+    merge_geojson,
+    tooltip=folium.GeoJsonTooltip(fields=["CTP_KOR_NM", "facility_capacity", "facility_count"],
+                                   aliases=["지역명:", "23년 누적 설비 용량 (KW) :", "23년 누적 설비 개수:"],),
+    style_function=style_function_2,
+    popup= folium.Popup("2023년 기준 시설 정보", max_width=300)
+).add_to(fg6)
 
 # 시/도 일사량 값 geojson
 folium.GeoJson(
     sido_merged,
-    style_function = style_function_2,
+    style_function = style_function_3,
     tooltip = folium.GeoJsonTooltip(fields=["SiDo", "insolation per month (kmh/m^2)"])
 ).add_to(fg5)
 
@@ -426,16 +435,19 @@ for i in range(len(e_power_df)) :
 
     fig = make_subplots(rows=2, cols=2,
                     specs=[[{"type": "bar"}, {"type": "pie"}],
-                           [{"colspan": 2}, None]],
+                           [{"colspan": 2, "type": "table"}, None]],
                             column_widths=[0.4, 0.6], row_heights =[0.7, 0.3])
     
-    fig.update_layout(title_text= f"{e_power_df.iloc[i, 0]} 발전량 및 전력 사용량 (2020년 8월 합산)",
+    fig.update_layout(title_text= f"{e_power_df.iloc[i, 0]} 발전량, 전력 사용량, 면적대비 태양광설비용량",
                        title_x = 0.5,
                        legend_y=0.5,
-                       legend_x=-0.15)
+                       legend_x=-0.15,
+                       showlegend=False)
 
     fig.add_trace(go.Bar( y=value ,x=name),
                   row=1, col=1)
+
+    # fig.update_layout(showlegend=False)
 
     fig.add_annotation(x=0, y=10,
             text=f"{(value.iloc[0] / value.iloc[1] * 100):.2f}%",
@@ -449,11 +461,10 @@ for i in range(len(e_power_df)) :
     
     fig.add_trace(
         go.Table(
-            header=dict(values=["태양광 발전량", "전력사용량", "단위면적당 설비용량"]),
+            header=dict(values=["태양광 발전량<br>(2020년 8월)", "전력사용량<br>(2020년 8월)", "단위면적당 설비용량<br>(2023년 기준 누적 설비용량)"]),
             cells=dict(values=[f"{value.iloc[0]}MKW", f"{value.iloc[1]}MKW", f"{sido_area.loc[i, 'electric_capacity'] / sido_area.loc[i, 'area']:.2f}KW/km²"])
             ),row=2, col=1
         )
-    fig.update_layout(showlegend=False)
     if not region_data.empty:
         fig.add_trace(
             go.Pie(
@@ -475,9 +486,6 @@ for i in range(len(e_power_df)) :
     e_power_bar_plot.append(popup)
 
 
-
-
-
 # 플롯 마커에 추가 후 맵으로
 for i in range(len(e_power_bar_plot)):
     location = [e_power_df.loc[i, 'latitude'], e_power_df.loc[i, 'longitude']]
@@ -486,6 +494,7 @@ for i in range(len(e_power_bar_plot)):
     gm1.add_child(marker)
 
 gm1.add_to(fg4)
+
 
 
 # 시/도 geojson 병합 후 맵에 저장
@@ -498,16 +507,6 @@ gm2 = folium.GeoJson(
     # style_function=style_function
 )
 
-# # 각 위치에 마커 추가
-# for i in range(len(sido_area)):
-#     location = [sido_area.loc[i, 'latitude'], sido_area.loc[i, 'longitude']]
-#     electric_capacity_per_area = sido_area.loc[i, 'electric_capacity'] / sido_area.loc[i, 'area']
-#     tooltip_text = f"지역명: {sido_area.loc[i, 'loc_nm']}<br>지역면적: {sido_area.loc[i, 'area']}km² <br>23년 누적 설비 용량: {sido_area.loc[i, 'electric_capacity']}KW<br>단위면적당 설비 용량(23년 기준): {electric_capacity_per_area:.2f} KW/km² "
-#     marker = folium.Marker(location=location, tooltip=tooltip_text)
-#     gm2.add_child(marker)
-
-# gm2.add_to(fg5)
 
 m.save("./Visualization/insolation_facility_map.html")
 print("맵 생성 완료")
-
