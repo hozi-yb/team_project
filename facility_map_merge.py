@@ -4,7 +4,8 @@ import geopandas as gpd
 import folium
 from folium import IFrame
 from folium.plugins import GroupedLayerControl
-from folium.plugins.treelayercontrol import TreeLayerControl
+# from folium.plugins.treelayercontrol import TreeLayerControl
+import branca.colormap as cm
 
 from shapely.geometry import Point
 from matplotlib.colors import Normalize, rgb2hex
@@ -75,19 +76,19 @@ insol_df = insol_df.reset_index(drop=True)
 
 city_insol_df = insol_df.groupby("city")["insolation per month (kmh/m^2)"].mean().reset_index()
 
-
 #일사량을 컬러맵으로 매핑
+colormap1 = cm.LinearColormap(["green", "yellow" ,"red"])
+colormap2 = cm.LinearColormap(["green", "yellow" ,"red"])
+# colormap2 = cm.linear.Paired_06.to_step(n=9)
 
 min_insol = city_insol_df['insolation per month (kmh/m^2)'].min()
 max_insol = city_insol_df['insolation per month (kmh/m^2)'].max()
-colormap = colormaps["coolwarm"]
-
 
 
 norm = Normalize(vmin = min_insol, vmax = max_insol)
 print(min_insol, max_insol) #최소, 최대 일사량 값 확인
 
-city_insol_df["Color(hex)"] = city_insol_df["insolation per month (kmh/m^2)"].apply(lambda insol: rgb2hex(colormap(norm(insol)))) 
+city_insol_df["Color(hex)"] = city_insol_df["insolation per month (kmh/m^2)"].apply(lambda insol: colormap1(norm(insol))) 
 # 일사량 값을 정규화 하여 컬러맵으로 변환
 
 #GeoJSON 데이터 읍, 면, 동 삭제하고 시 단위로 이름 단순화
@@ -107,25 +108,18 @@ gdf_grouped = gdf.dissolve(by = "simple_name", as_index=False)
 #Folium에 사용할 데이터 준비: gdf_grouped데이터와 city_insol_df 병합
 
 merged = gdf_grouped.merge(city_insol_df, left_on="simple_name", right_on="city", how = "left")
-#print(aug_df.info())
-# print(merged.info())
-
-
 
 
 #--------------------행정동으로 시/도 geojson
 #일사량을 컬러맵으로 매핑
-
 min_sido_insol = sido_insol_df['insolation per month (kmh/m^2)'].min()
 max_sido_insol = sido_insol_df['insolation per month (kmh/m^2)'].max()
-colormap = colormaps["coolwarm"]
-
 
 norm = Normalize(vmin = min_sido_insol, vmax = max_sido_insol)
-print(min_sido_insol, max_sido_insol) #최소, 최대 일사량 값 확인
 
-sido_insol_df["Color(hex)"] = sido_insol_df["insolation per month (kmh/m^2)"].apply(lambda insol: rgb2hex(colormap(norm(insol)))) 
+sido_insol_df["Color(hex)"] = sido_insol_df["insolation per month (kmh/m^2)"].apply(lambda insol: colormap1(norm(insol)))
 # 일사량 값을 정규화 하여 컬러맵으로 변환
+
 
 #GeoJSON 데이터 읍, 면, 동, 시 삭제하고 광역시/도 단위로 묶기
 
@@ -134,8 +128,6 @@ gdf_sido_grouped = gdf.dissolve(by = "sidonm", as_index=False)
 #Folium에 사용할 데이터 준비: gdf_sido_grouped데이터와 sido_insol_df 병합
 
 sido_merged = gdf_sido_grouped.merge(sido_insol_df, left_on="sidonm", right_on="SiDo", how = "left")
-
-
 
 
 #--------plant_New
@@ -154,7 +146,6 @@ comparison_df = pd.DataFrame({
     "only_in_df": pd.Series(only_in_df)
 })
 
-#comparison_df.to_csv("comparing_cities.csv")
 
 #df 수정하기
 
@@ -242,11 +233,10 @@ solar_plant_df = grouped_df
 
 min_cap = solar_plant_df['power generation capacity(kWh)'].min()
 max_cap = solar_plant_df['power generation capacity(kWh)'].max()
-colormap = colormaps["coolwarm"]
 
 norm = Normalize(vmin = min_cap, vmax = max_cap)
 
-solar_plant_df["Color(hex)"] = solar_plant_df["power generation capacity(kWh)"].apply(lambda capacity: rgb2hex(colormap(norm(capacity)))) 
+solar_plant_df["Color(hex)"] = solar_plant_df["power generation capacity(kWh)"].apply(lambda capacity: colormap2(norm(capacity)))
 # 설비용량 값을 정규화 하여 컬러맵으로 변환
 
 #Folium에 사용할 데이터 준비: edited_gdf데이터와 df 병합
@@ -279,15 +269,22 @@ for _, data in facility_df.iterrows():
 
 
 
+
 # 색상데이터를 위한 count 노멀라이즈
-facility_df["facility_count"] = facility_df["facility_count"].astype(float)  #.str.replace(",", "")
-norm = Normalize(vmin=facility_df["facility_count"].min(), vmax=facility_df["facility_count"].max())
-facility_df['normalized_count'] = facility_df['facility_count'].apply(norm)
+min_count = facility_df["facility_count"].min()
+max_count = facility_df["facility_count"].max()
+
+norm = Normalize(vmin=min_count, vmax=max_count)
+
+facility_df['normalized_count'] = facility_df['facility_count'].apply(lambda count: colormap2(norm(count)))
 
 # 색상데이터를 위한 발전량 노멀라이즈
-facility_df["facility_capacity"] = facility_df["facility_capacity"].astype(float)  #.str.replace(",", "")
-norm = Normalize(vmin=facility_df["facility_capacity"].min(), vmax=facility_df["facility_capacity"].max())
-facility_df['normalized_capacity'] = facility_df['facility_capacity'].apply(norm)
+min_capacity = facility_df["facility_capacity"].min()
+max_capacity = facility_df["facility_capacity"].max()
+
+norm = Normalize(vmin=min_capacity, vmax=max_capacity)
+
+facility_df['normalized_capacity'] = facility_df['facility_capacity'].apply(lambda capacity: colormap2(norm(capacity)))
 
 # 발전소 데이터에 새로 컬럼 추가해서 해당하는 지역이름 넣기
 facility_df["CTP_KOR_NM"] = geo_point
@@ -300,24 +297,36 @@ merge_geojson = geojson.merge(facility_df, left_on="CTP_KOR_NM", right_on="CTP_K
 #------------------------------ 맵 생성/저장
 
 m = folium.Map(location=[37.56, 126.98], zoom_start=7, tiles="cartoDB Positron")  # 기준지역 맵 생성
+m = folium.Map(location=[37.56, 126.98], zoom_start=7, tiles="cartoDB Positron")  # 기준지역 맵 생성
+
+
+colormap1.caption = "일사량 색 분포"
+# colormap2.caption = "태양광발전 관련 색 분포"
+colormap1.add_to(m)
+# colormap2.add_to(m)
 
 
 # 레이어 컨트롤
 fg1 = folium.FeatureGroup(name="2020년 8월 일사량", show=True)
-m.add_child(fg1)
-fg2 = folium.FeatureGroup(name="행정동 태양광발전 설비현황 (2024년 기준) ", show=False)
-m.add_child(fg2)
+fg1.add_to(m)
 
-fg4 = folium.FeatureGroup(name="전력사용량 대비 태양광발전량 (2020년 기준)", show=False)
-m.add_child(fg4)
-fg5 = folium.FeatureGroup(name="2020년 8월 일사량", show=False)
-m.add_child(fg5)
+fg2 = folium.FeatureGroup(name="행정동 태양광발전 설비현황 (2024년 기준) ", show=False, lazy=True)
+fg2.add_to(m)
 
-fg3 = folium.FeatureGroup(name="태양광발전 설비현황 (컬러맵 : 개수)", show=False)
-m.add_child(fg3)
-fg6 = folium.FeatureGroup(name="태양광발전 설비현황 (컬러맵 : 설비용량)", show=False)
-m.add_child(fg6)
+fg4 = folium.FeatureGroup(name="전력사용량 대비 태양광발전량 (2020년 기준)", show=False, lazy=True)
+fg4.add_to(m)
 
+
+fg5 = folium.FeatureGroup(name="2020년 8월 일사량", show=False,lazy=True)
+fg5.add_to(m)
+
+
+fg3 = folium.FeatureGroup(name="태양광발전 설비현황 (컬러맵 : 개수)", show=False, lazy=True)
+fg3.add_to(m)
+
+
+fg6 = folium.FeatureGroup(name="태양광발전 설비현황 (컬러맵 : 설비용량)", show=False, lazy=True)
+fg6.add_to(m)
 
 folium.LayerControl(collapsed=False).add_to(m)
 
@@ -330,30 +339,26 @@ GroupedLayerControl(
 
 # 색상
 
-# 스타일함수
-def colormap(value):
-    return rgb2hex((value, 1 - value, 0))
-
 # count 스타일 
 def style_function(x):
-    facility_count = x["properties"].get("normalized_count", 0)
+    facility_count = x["properties"].get("normalized_count", None)
     # print(facility_count)
     return {
-        "fillColor": colormap(facility_count),
+        "fillColor": facility_count,
         "color": "black",
         "weight": 1,
-        "fillOpacity": 0.4,
+        "fillOpacity": 0.5,
     }
 
 # capacity 스타일
 def style_function_2(x):
-    facility_capacity = x["properties"].get("normalized_capacity", 0)
+    facility_capacity = x["properties"].get("normalized_capacity", None)
     # print(facility_capacity)
     return {
-        "fillColor": colormap(facility_capacity),
+        "fillColor": facility_capacity,
         "color": "black",
         "weight": 1,
-        "fillOpacity": 0.4,
+        "fillOpacity": 0.5,
     }
     
 # solar_power_plant 스타일
@@ -378,7 +383,6 @@ def style_function_3(feature):
 
 # geojson 저장 / 툴팁, 스타일, 팝업
 
-# ---- 행정동 geojson 저장
 folium.GeoJson(
     merged,
     style_function = style_function_3,
@@ -506,7 +510,6 @@ gm2 = folium.GeoJson(
                                   aliases=["지역명:", "지역면적(km²):", "23년 누적 설비 용량(KW):"])
     # style_function=style_function
 )
-
 
 m.save("./Visualization/insolation_facility_map.html")
 print("맵 생성 완료")
