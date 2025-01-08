@@ -5,10 +5,20 @@
 ## 프로젝트
 국내 일사량지도와 태양광 발전시설 현황을 한 지도에 모아, 한번에 확인할 수 있는 지도 제작
 ### ::프로젝트 작업 기간 : 12/20 ~ 1/10
+
+
 ---
 ## 배포 주소 : <https://dowill-hob.github.io/solar_power_map/>
+
+
 ---
-## :world_map: 주요 기능 
+## :world_map: 주요 기능
+- 항목별 체크리스트
+- 단계구분도를 위한 컬러바
+- 일사량 표시
+- 태양광 설비 관련 정보 표시
+
+  
 ### 국내 일사량 지도
 #### 행정동, 시/도별 (2020년 8월 기준)
 - 일사량 단계구분도 표시
@@ -20,7 +30,8 @@
 #### 행정동별 (2024년 기준)
 - 설비용량 단계구분도 표시
 - 팝업으로 설비용량 표시
-<br><img src="(https://github.com/user-attachments/assets/c0f8f234-ab6c-43dc-ae5d-85750501cdb6" width="30%" height="30%" title="행정동별 설비용량 단계구분도" alt="행정동 설비용량 단계구분도"></img>
+<br><img src="https://github.com/user-attachments/assets/c0f8f234-ab6c-43dc-ae5d-85750501cdb6" width="30%" height="30%" title="행정동별 설비용량 단계구분도" alt="행정동 설비용량 단계구분도"></img>
+
 
 #### 시/도별 
 - 누적 설비 용량(KW) 기준 단계구분도    (2023년 기준)
@@ -30,4 +41,6 @@
 - 태양광발전량, 전력 사용량 비교 그래프 (2020년 8월 기준)
 - 용도별 전력 사용량 파이그래프         (2020년 8월 기준)
 - 단위면적 당 설비용량 표시             (2023년 기준)
-<br><img src="https://github.com/user-attachments/assets/5687994c-daa8-4fe3-a7e2-27e72a49fd21" width="30%" height="30%" title="행정동별 일사량 단계구분도" alt="일사량 단계구분도"></img>
+<br><img src="https://github.com/user-attachments/assets/910c545c-138d-4f9d-9da7-d7e2ffd1e7c5" width="30%" height="30%" title="그래프 마커" alt="지도 그래프 마커"></img>
+<img src="https://github.com/user-attachments/assets/d8d513a3-846d-4480-a684-2ac5b5e00a43" width="50%" height="50%" title="그래프" alt="그래프"></img>
+
