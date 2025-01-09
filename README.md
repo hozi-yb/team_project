@@ -20,18 +20,19 @@
 
 
 ---
-## 배포 주소 : <https://dowill-hob.github.io/solar_power_map/>
+## 배포 주소 
+<https://dowill-hob.github.io/solar_power_map/>
 <br>
 
 ---
-## :world_map: 주요 기능
+##  ⭐ 주요 기능
 - 항목별 체크리스트
 - 단계구분도를 위한 컬러바
 - 일사량 표시
 - 태양광 설비 관련 정보 표시
 <br>
   
-### 국내 일사량 지도
+### 🗺️ 국내 일사량 지도
 #### 행정동, 시/도별 (2020년 8월 기준)
 - 일사량 단계구분도 표시
 - 팝업으로 일사량 표시
@@ -39,7 +40,7 @@
 <br>
 
 
-### 태양광 발전시설 관련 현황
+### 🗺️ 태양광 발전시설 관련 현황
 #### 행정동별 (2024년 기준)
 - 설비용량 단계구분도 표시
 - 팝업으로 설비용량 표시
@@ -55,9 +56,19 @@
 - 단위면적 당 설비용량 표시             (2023년 기준)
 <br><img src="https://github.com/user-attachments/assets/84d87706-148b-406b-b2ba-47b1341ab7b5" width="50%" height="50%" title="그래프" alt="그래프"></img>
 <br>
+
 ---
+
 <br>
 
+## 🔍 맡은 부분
+- 지도에 시/도 경계 시각화
+- 시/도 태양광 발전 설비 정보 시각화
+- 컬러바, 체크리스트 화면구성
+
+<br>
+
+---
 ## 📚  Stack
 ### - language
 <br>![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
@@ -71,7 +82,9 @@
 <br>![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)
 ![KakaoTalk](https://img.shields.io/badge/kakaotalk-ffcd00.svg?style=for-the-badge&logo=kakaotalk&logoColor=000000)
 
+---
 
+<br>
 ## 향후 개발 방향
 <br>태양광발전은 **시간, 기후, 기상환경**에 따라 변동성이 있다.<br>
 이 변동성을 제어할 수 있는 방법을 찾기위해<br>
